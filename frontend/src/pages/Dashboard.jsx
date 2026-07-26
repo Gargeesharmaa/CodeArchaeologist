@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { ReactFlow, Background, Controls, MiniMap, useNodesState, useEdgesState, Panel } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,8 +29,8 @@ const TABS = [
 
 export default function Dashboard() {
   const { projectId } = useParams();
-  const location = useLocation();
-  const project = MOCK_PROJECT; // TODO: replace with getProject(projectId) when backend ready
+  const [searchParams, setSearchParams] = useSearchParams();
+  const project = MOCK_PROJECT;
 
   const [nodes, , onNodesChange] = useNodesState(MOCK_GRAPH_NODES);
   const [edges, , onEdgesChange] = useEdgesState(MOCK_GRAPH_EDGES);
@@ -42,12 +42,22 @@ export default function Dashboard() {
   const mainRef = useRef(null);
   const dialogRef = useRef(null);
 
-  // Open code viewer dialog — using native <dialog> per web guidance
+  // Open code viewer modal without page reload
   function openCodeViewer(fileId, fileName) {
-    const content = MOCK_FILE_CONTENTS[fileId] || `# ${fileName}\n# Code content would load from backend`;
-    const explanation = MOCK_AI_EXPLANATIONS[fileId] || `This file is part of the ${project.name} codebase.`;
+    const content = MOCK_FILE_CONTENTS[fileId] || `# ${fileName}\n# Code content loaded for file ${fileId}`;
+    const explanation = MOCK_AI_EXPLANATIONS[fileId] || `This file (${fileName}) is a key component of ${project.name}.`;
     setDialogFile({ id: fileId, name: fileName, content, explanation });
+    setSearchParams({ file: fileId });
   }
+
+  // Handle URL query parameter file loading if user comes in with ?file=auth_r
+  useEffect(() => {
+    const fileParam = searchParams.get('file');
+    if (fileParam && !dialogFile) {
+      const fileName = fileParam.includes('.') ? fileParam : `${fileParam}.py`;
+      openCodeViewer(fileParam, fileName);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (dialogFile && dialogRef.current) {
@@ -58,17 +68,21 @@ export default function Dashboard() {
   function closeDialog() {
     dialogRef.current?.close();
     setDialogFile(null);
+    setSearchParams({});
   }
 
   function onNodeClick(_, node) {
     setSelectedNode(node);
+    if (node.data.type === 'file' || node.data.type === 'entry' || node.data.type === 'db') {
+      openCodeViewer(node.id, node.data.label);
+    }
   }
 
   return (
     <div className="page-wrapper">
       <Navbar projectName={project.name} showProjectActions />
 
-      {/* Apply inert to main content when dialog is open (web guidance) */}
+      {/* Apply inert to background content when dialog is open (web guidance) */}
       <div className={styles.shell} ref={mainRef} inert={dialogFile ? '' : undefined}>
         {/* ── LEFT: File Tree ── */}
         <aside className={styles.sidebar} aria-label="File explorer">
@@ -81,7 +95,6 @@ export default function Dashboard() {
 
         {/* ── CENTER: Tab panel ── */}
         <main className={styles.centerPanel} id="main" aria-label="Main analysis area">
-          {/* Tab navigation */}
           <nav className={styles.tabs} aria-label="Dashboard sections" role="tablist">
             {TABS.map(tab => (
               <button
@@ -118,11 +131,11 @@ export default function Dashboard() {
               colorMode="dark"
               proOptions={{ hideAttribution: true }}
             >
-              <Background color="rgba(99,102,241,0.08)" gap={24} />
+              <Background color="rgba(99,102,241,0.12)" gap={24} />
               <Controls />
               <MiniMap nodeColor={() => '#6366f1'} maskColor="rgba(10,10,15,0.7)" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }} />
 
-              {/* Node info panel */}
+              {/* Node info floating card */}
               {selectedNode && (
                 <Panel position="top-left">
                   <motion.div className={styles.nodeInfo} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
@@ -163,7 +176,10 @@ export default function Dashboard() {
             aria-labelledby="tab-challenges"
             style={{ display: activeTab === 'challenges' ? 'flex' : 'none', flex: 1, overflow: 'auto' }}
           >
-            <ChallengePanel onNodeHighlight={setSelectedNode} />
+            <ChallengePanel onNodeHighlight={(node) => {
+              setSelectedNode(node);
+              if (node.file) openCodeViewer(node.id || 'auth_r', node.file);
+            }} />
           </div>
         </main>
 
@@ -196,7 +212,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ── Code Viewer Dialog — native <dialog> per web guidance ── */}
+      {/* Code Viewer Dialog */}
       <CodeViewerDialog dialogRef={dialogRef} file={dialogFile} onClose={closeDialog} />
     </div>
   );
