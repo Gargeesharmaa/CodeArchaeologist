@@ -1,6 +1,6 @@
 # 🏛️ CodeArchaeologist
 
-> **AI-Powered Codebase Visualization & Architecture Explorer for Hackathons**
+> **AI-Powered Codebase Visualization & Architecture Explorer **
 
 CodeArchaeologist acts like a senior developer sitting right next to you on day one. Paste any public GitHub repository link, and it generates an **interactive visual dependency map**, **AI architecture explanations**, and **guided learning quests** in under 5 minutes.
 
