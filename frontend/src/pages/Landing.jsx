@@ -214,7 +214,7 @@ export default function Landing() {
               <div className={styles.footerLogoIcon} aria-hidden="true"><GitBranch size={14} /></div>
               <span>CodeArchaeologist</span>
             </div>
-            <p className={styles.footerNote}>Built with ❤️ at the hackathon · Powered by Gemini 2.5 Flash</p>
+            <p className={styles.footerNote}>Built with ❤️ </p>
           </div>
         </div>
       </footer>
