@@ -65,7 +65,7 @@ CodeArchaeologist acts like a senior developer sitting right next to you on day 
 
 ---
 
-## 🔌 Backend Integration Guide (For Teammates)
+## 🔌 Backend Integration Guide 
 
 The frontend is currently powered by a mock data layer (`src/data/mockData.js`), allowing you to test the complete visual UI offline.
 
