@@ -1,0 +1,82 @@
+.treeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.treeFolder {
+  display: flex;
+  flex-direction: column;
+}
+
+.folderRow, .fileRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.folderRow:hover, .fileRow:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text-primary);
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.folderName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.fileName {
+  flex: 1;
+}
+
+.children {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.importanceTag {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.low {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
