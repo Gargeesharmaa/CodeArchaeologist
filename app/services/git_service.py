@@ -3,6 +3,11 @@ import time
 from pathlib import Path
 from uuid import uuid4
 from git import Repo, GitCommandError
+import sys
+from pathlib import Path
+
+# Add the project root folder to Python's search path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from app.core.config import settings
 
 class GitService:
